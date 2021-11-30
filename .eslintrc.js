@@ -39,7 +39,8 @@ module.exports = {
     'vue/space-unary-ops': 1,
     'require-unicode-regexp': 0,
     'vue/no-unused-components': 1,
-    'no-new': 0
+    'no-new': 0,
+    'no-bitwise': 0
   },
   overrides: [
     {

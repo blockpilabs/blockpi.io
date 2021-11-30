@@ -61,9 +61,7 @@ module.exports = {
     if (isProduction) {
       config.externals = {
         'vue': 'Vue',
-        'element-ui': 'ELEMENT',
-        'echarts': 'echarts',
-        'vuetify': 'Vuetify'
+        'element-ui': 'ELEMENT'
       };
       // 开启GZIP
       config.plugins.push(new CompressionWebpackPlugin({

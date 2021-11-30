@@ -9,6 +9,7 @@
         ref="banner"
         class="banner"
       >
+        <point-canvas v-if="device !== 'mobile'" />
         <div class="banner-container">
           <div class="banner-top">
             <div class="title-text">
@@ -59,6 +60,9 @@
         @reach-top="reachTop"
       />
       <div class="get-start">
+        <div class="next">
+          <i class="iconfont icon-arrow" />
+        </div>
         <div class="get-start__main">
           <h2>Wanna Try <br v-hide-dom="750"><span class="attention">BlockPI</span> Now ?</h2>
           <p class="descrip">
@@ -80,15 +84,16 @@
 
 <script>
 import AppFooter from '@/components/Footer';
-import FeatureArea from './components/FeatureArea/index-new';
+import FeatureArea from './components/FeatureArea';
 import TechnologicalFeatures from './components/TechnologicalFeatures';
-
+import PointCanvas from '@/components/PointCanvas';
 export default {
   name: 'HomeIntroduce',
   components: {
     AppFooter,
     FeatureArea,
-    TechnologicalFeatures
+    TechnologicalFeatures,
+    PointCanvas
   },
   data() {
     return {
@@ -107,6 +112,9 @@ export default {
   computed: {
     words() {
       return ['Infinite^500', 'Performance^500', 'Future^500', 'Intelligence^500', 'Distribution^500', 'Scalability^500'];
+    },
+    device() {
+      return this.$store.getters.device;
     }
   },
   methods: {
@@ -137,12 +145,12 @@ export default {
     z-index: 2;
     width: 100%;
     &-container {
+      position: relative;
+      z-index: 3;
       max-width: 1280px;
       width: 100%;
       margin: 0 auto;
       padding: 100px 20px 40px;
-      background: url('~@/assets/images/banner.jpg') no-repeat center;
-      background-size: contain;
     }
     &-top {
       display: flex;
@@ -240,8 +248,19 @@ export default {
     background: url('~@/assets/images/try-bg.jpg') no-repeat center;
     background-size: contain;
     position: relative;
-    padding-bottom: 130px;
+    padding-top: 150px;
+    padding-bottom: 200px;
     width: 100%;
+    .next {
+      position: absolute;
+      left: 50%;
+      top: 100px;
+      transform: translateX(-50%);
+      .iconfont {
+        color: #1a4642;
+        font-size: 30px;
+      }
+    }
     &__main {
       max-width: 1280px;
       width: 100%;
@@ -299,6 +318,11 @@ export default {
     }
     .get-start {
       padding-bottom: 230px;
+      .next {
+        .iconfont {
+          font-size: 40px;
+        }
+      }
       &__main {
         h2 {
           font-size: 54px;
@@ -362,7 +386,14 @@ export default {
 @media screen and (max-width: 750px) {
   .home-page {
     .banner {
+      ::v-deep {
+        .point-canvas {
+          display: none;
+        }
+      }
       &-container {
+        background: url('~@/assets/images/banner.jpg') no-repeat center;
+        background-size: contain;
         background-position: center 16%;
       }
       &-top {

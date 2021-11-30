@@ -267,16 +267,7 @@ export default {
       width: 840px;
     }
   }
-  .next {
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
-    .iconfont {
-      color: #1a4642;
-      font-size: 30px;
-    }
-  }
+
 }
 
 @media screen and (max-width: 1024px) {
@@ -334,11 +325,6 @@ export default {
       &-right {
         height: auto;
         width: 100%;
-      }
-    }
-    .next {
-      .iconfont {
-        font-size: 40px;
       }
     }
   }

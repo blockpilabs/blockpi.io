@@ -98,7 +98,7 @@ export default {
         width: 390px;
         height: 60px;
         background-color: #1f2a27;
-        border: solid 1px #0d1614;
+        border: solid 1px #5d6d69;
         color: #fff;
         &::-webkit-input-placeholder {
             color: #5d6d69;
@@ -108,6 +108,12 @@ export default {
           }
         &:-ms-input-placeholder {
             color: #5d6d69;
+        }
+        &:focus {
+          border: solid 1px #16c79a;
+        }
+        &:focus + .el-input__suffix .el-input__icon {
+          color: #16c79a;
         }
       }
       ::v-deep .el-input__icon {
