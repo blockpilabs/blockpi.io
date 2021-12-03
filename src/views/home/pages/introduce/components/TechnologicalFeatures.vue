@@ -123,10 +123,8 @@ export default {
       }
       if (boundary === 0) {
         if (this.scrollCount === 0 && delta > 0) {
-          if (this.isScrolling) {
-            event.preventDefault();
-          } else {
-            // outer.scrollTop = outer.scrollTop + boxTop;
+          event.preventDefault();
+          if (!this.isScrolling) {
             this.$emit('reach-top');
           }
         } else if (this.scrollCount === 3 && delta < 0) {

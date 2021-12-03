@@ -117,9 +117,8 @@ export default {
             event.preventDefault();
           }
         } else if (this.scrollCount === 3 && delta < 0) {
-          if (this.isScrolling) {
-            event.preventDefault();
-          } else {
+          event.preventDefault();
+          if (!this.isScrolling) {
             this.$emit('reach-bot');
           }
         } else {
