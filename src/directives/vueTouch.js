@@ -1,4 +1,4 @@
-function vueTouch(el, binding, type) {
+function VueTouch(el, binding, type) {
   this.obj = el;
   this.binding = binding;
   this.touchType = type;
@@ -17,7 +17,7 @@ function vueTouch(el, binding, type) {
     this.move(e);
   }, false);
 };
-vueTouch.prototype = {
+VueTouch.prototype = {
   start: function(e) {
     this.vueMoves = true;
     this.vueLeave = true;
@@ -58,46 +58,46 @@ vueTouch.prototype = {
       };
     };
   },
-  move: function(e) {
+  move: function() {
     this.vueMoves = false;
   }
 };
 
 export default {
-  install: function(Vue, options) {
+  install: function(Vue) {
     Vue.directive('tap', {
       bind: function(el, binding, vnode) {
-        new vueTouch(el, binding, 'tap', vnode);
+        new VueTouch(el, binding, 'tap', vnode);
       }
     });
     Vue.directive('swipe', {
       bind: function(el, binding, vnode) {
-        new vueTouch(el, binding, 'swipe', vnode);
+        new VueTouch(el, binding, 'swipe', vnode);
       }
     });
     Vue.directive('swipeleft', {
       bind: function(el, binding, vnode) {
-        new vueTouch(el, binding, 'swipeleft', vnode);
+        new VueTouch(el, binding, 'swipeleft', vnode);
       }
     });
     Vue.directive('swiperight', {
       bind: function(el, binding, vnode) {
-        new vueTouch(el, binding, 'swiperight', vnode);
+        new VueTouch(el, binding, 'swiperight', vnode);
       }
     });
     Vue.directive('swipedown', {
       bind: function(el, binding, vnode) {
-        new vueTouch(el, binding, 'swipedown', vnode);
+        new VueTouch(el, binding, 'swipedown', vnode);
       }
     });
     Vue.directive('swipeup', {
       bind: function(el, binding, vnode) {
-        new vueTouch(el, binding, 'swipeup', vnode);
+        new VueTouch(el, binding, 'swipeup', vnode);
       }
     });
     Vue.directive('longtap', {
       bind: function(el, binding, vnode) {
-        new vueTouch(el, binding, 'longtap', vnode);
+        new VueTouch(el, binding, 'longtap', vnode);
       }
     });
   }

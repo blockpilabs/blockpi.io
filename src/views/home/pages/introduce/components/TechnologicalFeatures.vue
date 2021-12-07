@@ -106,11 +106,8 @@ export default {
       });
     },
     handleScroll(event) {
-      const outer = document.getElementById('full');
       const dom = this.$refs.container;
       const boundary = dom.getBoundingClientRect().top;
-      const domHeight = dom.getBoundingClientRect().height;
-      const boxTop = this.$refs.box.getBoundingClientRect().top;
       const value = event.wheelDelta || -event.deltaY || -event.detail;
       // delta < 0 -- DOWN
       const delta = Math.max(-1, Math.min(1, value));
@@ -130,8 +127,6 @@ export default {
         } else if (this.scrollCount === 3 && delta < 0) {
           if (this.isScrolling) {
             event.preventDefault();
-          } else {
-            // outer.scrollTop = outer.scrollTop + boxTop + domHeight;
           }
         } else {
           event.preventDefault();
@@ -218,7 +213,7 @@ export default {
     margin: 70px auto;
     display: flex;
     align-items: center;
-    justify-content: center;
+
     &-left {
       position: relative;
       width: 180px;
@@ -263,6 +258,7 @@ export default {
     &-right {
       height: 480px;
       width: 840px;
+      margin-left: 100px;
     }
   }
 
@@ -323,6 +319,7 @@ export default {
       &-right {
         height: auto;
         width: 100%;
+        margin-left: 0px;
       }
     }
   }

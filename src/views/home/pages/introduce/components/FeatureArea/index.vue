@@ -153,11 +153,7 @@ export default {
       if (this.device !== 'pad') {
         return;
       }
-      const outer = document.getElementById('full');
       const dom = this.$refs.container;
-      const areaHeight = this.$refs.area.getBoundingClientRect().height;
-      const domHeight = dom.getBoundingClientRect().height;
-      const areaTop = this.$refs.area.getBoundingClientRect().top;
       const boundary = dom.getBoundingClientRect().top;
       if (boundary < 0 && this.scrollCount === 3 && !this.isScrolling) {
         if (delta > 0) {
@@ -170,15 +166,12 @@ export default {
         if (this.scrollCount === 0 && delta > 0) {
           if (this.isScrolling) {
             e.preventDefault();
-          } else {
-            // outer.scrollTop = outer.scrollTop + areaTop;
           }
         } else if (this.scrollCount === 3 && delta < 0) {
           if (this.isScrolling) {
             e.preventDefault();
           } else {
             this.$emit('reach-bot');
-            // outer.scrollTop = outer.scrollTop + areaTop + areaHeight - domHeight;
           }
         } else {
           e.preventDefault();
