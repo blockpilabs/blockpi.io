@@ -168,9 +168,8 @@ export default {
             e.preventDefault();
           }
         } else if (this.scrollCount === 3 && delta < 0) {
-          if (this.isScrolling) {
-            e.preventDefault();
-          } else {
+          e.preventDefault();
+          if (!this.isScrolling) {
             this.$emit('reach-bot');
           }
         } else {
@@ -235,7 +234,6 @@ export default {
       width: 100%;
       height: 100%;
       margin: 0px auto;
-      // height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -247,7 +245,7 @@ export default {
   }
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1024px) and (orientation: portrait) {
   .feature-area {
     .feature-box {
       .feature-item {
@@ -302,6 +300,9 @@ export default {
 
 @media screen and (max-width: 1023px) {
   .feature-area {
+    .sticky-title {
+      top: 140px;
+    }
     .feature-box {
       .feature-item {
         padding: 0 22px;

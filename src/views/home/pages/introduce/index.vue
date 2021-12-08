@@ -291,12 +291,11 @@ export default {
     }
   }
 }
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1024px) and (orientation: portrait) {
   .home-page {
     .banner {
       &-container {
         padding: 80px 30px 40px;
-        background-position: center 30%;
       }
       &-top {
         .title-text {

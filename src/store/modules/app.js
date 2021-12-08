@@ -1,20 +1,15 @@
 
 const state = {
   device: 'desktop',
-  vh_height: 1297,
-  screenShort: false
+  direction: 'portrait'
 };
 
 const mutations = {
   TOGGLE_DEVICE: (state, device) => {
     state.device = device;
   },
-  SET_VH_HEIGHT: (state, height) => {
-    state.vh_height = height;
-  },
-
-  SET_SCREEN_SHORT: (state, flag) => {
-    state.screenShort = flag;
+  SET_ORIENTATION: (state, direction) => {
+    state.direction = direction;
   }
 };
 

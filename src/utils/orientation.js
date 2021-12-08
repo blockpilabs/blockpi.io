@@ -1,5 +1,5 @@
-(function rotate() {
-  var orientation = window.orientation;
+export function rotate() {
+  var orientation = screen.orientation.angle;
   var pd = null;
   function createPd() {
     if (document.getElementById('preventTran') === null) {
@@ -45,4 +45,4 @@
     document.getElementById('preventTran').style.display = 'none';
     rotate();
   };
-})();
+};

@@ -264,7 +264,8 @@ export default {
 
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1024px),
+screen and (min-width: 1024px) and (orientation: landscape) {
   .technological-features-box {
     position: relative;
     width: 100%;
@@ -401,7 +402,7 @@ export default {
     }
   }
 }
-@media screen and (max-height: 800px) and (min-width: 1024px) {
+@media screen and (max-height: 800px) and (min-width: 1025px) {
   .technological-features{
     padding-top: 0px;
     .main {

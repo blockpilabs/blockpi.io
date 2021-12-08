@@ -14,12 +14,17 @@ export default {
     return { appReload: this.reload };
   },
   created() {
-    window.addEventListener('orientationchange', this.reload);
+    this.handleChange(false);
+    window.addEventListener('orientationchange', this.handleChange);
     this.$once('hook:beforeDestory', () => {
-      window.removeEventListener('orientationchange', this.reload);
+      window.removeEventListener('orientationchange', this.handleChange);
     });
   },
   methods: {
+    handleChange(reload = true) {
+      this.$store.commit('app/SET_ORIENTATION', (screen.orientation.angle === 0 || screen.orientation.angle === 180) ? 'portrait' : 'landscape');
+      reload && this.reload();
+    },
     reload() {
       this.showView = false;
       setTimeout(() => {

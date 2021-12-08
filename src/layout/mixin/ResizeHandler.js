@@ -1,4 +1,5 @@
 import store from '@/store';
+import { rotate } from '@/utils/orientation';
 
 export default {
   beforeMount() {
@@ -11,6 +12,7 @@ export default {
     const isMobile = this.$_isMobile();
     const isPad = this.$_isPad();
     if (isMobile) {
+      rotate();
       store.dispatch('app/toggleDevice', 'mobile');
     }
     if (isPad) {
@@ -22,7 +24,7 @@ export default {
     // https://vuejs.org/v2/style-guide/index.html#Private-property-names-essential
     $_isMobile() {
       const ua = navigator.userAgent;
-      const isMobile = /Mobi|Android|iPhone/i.test(ua);
+      const isMobile = /Android|iPhone/i.test(ua);
       return isMobile;
     },
     $_isPad() {

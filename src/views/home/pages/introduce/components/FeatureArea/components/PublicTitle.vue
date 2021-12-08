@@ -41,7 +41,7 @@ export default {
     opacity: 1;
   }
 }
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1024px) and (orientation: portrait) {
   .public-title {
     margin-top: 40px;
     margin-bottom: 80px;
@@ -55,7 +55,7 @@ export default {
 }
 @media screen and (max-width: 1023px) {
   .public-title {
-    margin-top: 40px;
+    margin-top: 0px;
     margin-bottom: 60px;
     &__top {
       font-size: 44px;

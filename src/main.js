@@ -18,7 +18,6 @@ import 'animate.css';
 import '@/utils/permission';
 import xss from 'xss';
 import VueTypedJs from 'vue-typed-js';
-import '@/utils/orientation';
 import lazyStart from '@/directives/lazyStart';
 import hideDom from '@/directives/hideDom';
 import vueTouch from '@/directives/vueTouch';
