@@ -42,8 +42,8 @@ export default {
   data() {
     return {
       list: [
-        { icon: 'icon-telegram', url: 'https://t.me/blockpidaily' },
         { icon: 'icon-twitter', url: 'https://twitter.com/RealBlockPI' },
+        { icon: 'icon-telegram', url: 'https://t.me/blockpidaily' },
         // { icon: 'icon-medium-square', url: 'https://medium.com/@blockpi' },
         { icon: 'icon-discord', url: 'https://discord.gg/xTvGVrGVZv' }
       ],

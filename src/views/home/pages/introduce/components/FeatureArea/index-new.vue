@@ -3,36 +3,40 @@
     ref="area"
     class="feature-area"
   >
-    <public-title
-      ref="stickyTitle"
-      class="sticky-title"
-      show
-    />
     <div
       ref="container"
       v-swipeup="(e) => vueTouch(-1,e)"
       v-swipedown="(e) => vueTouch(1,e)"
       class="feature-container"
     >
+      <public-title
+        ref="stickyTitle"
+        class="sticky-title"
+        :show="scrollCount <= 3"
+      />
       <div
         ref="boxer"
         class="feature-boxer"
       >
         <div
+          v-for="item in [0, 1, 2, 3]"
           ref="item"
+          :key="'feature'+ item"
           class="feature-box"
+          :class="{ 'is-active': scrollCount === item }"
         >
-          <feature-one class="feature-item" />
+          <feature-one
+            ref="featureItem"
+            class="feature-item"
+            :list-index="item"
+            :loop="loopIndexs.includes(item)"
+            :animation-data="animationDatas[item]"
+          />
         </div>
-        <div class="feature-box">
-          <feature-two class="feature-item" />
-        </div>
-        <div class="feature-box">
-          <feature-three class="feature-item" />
-        </div>
-        <div class="feature-box">
-          <feature-four class="feature-item" />
-        </div>
+        <technological-features
+          ref="technological"
+          :scroll-count="scrollCount"
+        />
       </div>
     </div>
   </div>
@@ -40,30 +44,38 @@
 
 <script>
 import FeatureOne from './components/FeatureOne';
-import FeatureTwo from './components/FeatureTwo';
-import FeatureThree from './components/FeatureThree';
-import FeatureFour from './components/FeatureFour';
 import PublicTitle from './components/PublicTitle';
+import * as animationData0 from '@/assets/lottie/animation1.json';
+import * as animationData1 from '@/assets/lottie/animation2.json';
+import * as animationData2 from '@/assets/lottie/animation3.json';
+import * as animationData3 from '@/assets/lottie/animation4.json';
+import TechnologicalFeatures from '../TechnologicalFeaturesNew.vue';
+import _ from 'lodash';
 
 export default {
   name: 'FeatureArea',
   components: {
     FeatureOne,
-    FeatureTwo,
-    FeatureThree,
-    FeatureFour,
-    PublicTitle
+    PublicTitle,
+    TechnologicalFeatures
   },
   data() {
     return {
       isScrolling: false,
       timer: null,
-      scrollCount: 0
+      scrollCount: 0,
+      loopIndexs: [1, 3],
+      scrollTime: new Date().getTime(),
+      preventFlag: true,
+      flagTimer: null
     };
   },
   computed: {
     device() {
       return this.$store.getters.device;
+    },
+    animationDatas() {
+      return [animationData0, animationData1, animationData2, animationData3];
     }
   },
   watch: {
@@ -75,17 +87,21 @@ export default {
     this.init();
   },
   methods: {
-    intoView() {
-      setTimeout(() => {
-        this.$refs.area.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-      }, 100);
-    },
     init() {
       if (this.device === 'desktop') {
-        this.$refs.container.addEventListener('wheel', this.handleScroll, true);
+        document.addEventListener('wheel', this.handleScroll, { passive: false });
         this.$once('hook:beforeDestroy', () => {
-          this.$refs.container.removeEventListener('wheel', this.handleScroll, true);
+          document.removeEventListener('wheel', this.handleScroll, { passive: false });
         });
+      }
+    },
+    updateTime: _.throttle(function(currTime) {
+      this.scrollTime = currTime;
+    }, 30),
+    clearFlag() {
+      if (this.flagTimer) {
+        clearTimeout(this.flagTimer);
+        this.flagTimer = null;
       }
     },
     handleScroll(event) {
@@ -94,23 +110,44 @@ export default {
       const value = event.wheelDelta || -event.deltaY || -event.detail;
       // delta < 0 -- DOWN
       const delta = Math.max(-1, Math.min(1, value));
-      if (boundary < 0 && this.scrollCount === 3 && !this.isScrolling) {
-        if (delta > 0) {
-          this.intoView();
-        } else {
-          this.$emit('reach-bot');
-        }
-      }
+      const currTime = new Date().getTime();
+      const during = currTime - this.scrollTime;
       if (boundary === 0) {
+        if (this.preventFlag) {
+          this.flagTimer = setTimeout(() => {
+            this.preventFlag = false;
+            this.clearFlag();
+          }, 200);
+          this.scrollTime = currTime;
+          event.preventDefault();
+          return false;
+        }
+        if (during <= 60) {
+          event.preventDefault();
+          this.updateTime(currTime);
+
+          return false;
+        }
+
+        this.scrollTime = currTime;
         if (this.scrollCount === 0 && delta > 0) {
           if (this.isScrolling) {
             event.preventDefault();
+          } else {
+            this.clearFlag();
+            this.flagTimer = setTimeout(() => {
+              this.preventFlag = true;
+              this.clearFlag();
+            }, 200);
           }
-        } else if (this.scrollCount === 3 && delta < 0) {
+        } else if (this.scrollCount === 6 && delta < 0) {
           if (this.isScrolling) {
             event.preventDefault();
           } else {
-            this.$emit('reach-bot');
+            this.flagTimer = setTimeout(() => {
+              this.preventFlag = true;
+              this.clearFlag();
+            }, 200);
           }
         } else {
           event.preventDefault();
@@ -121,55 +158,45 @@ export default {
               this.isScrolling = false;
               clearTimeout(this.timer);
               this.timer = null;
-            }, 1500);
+            }, 800);
           }
         }
       }
     },
     handleAnim(val) {
-      const unit = val;
+      const unit = val <= 4 ? val : 4;
       const boxer = this.$refs.boxer;
       const outer = document.getElementById('full');
       const areaTop = this.$refs.area.getBoundingClientRect().top;
-      const item = this.$refs.item;
-      const stickyTitle = this.$refs.stickyTitle;
-      const style = getComputedStyle(stickyTitle.$el);
-      const offet = unit === 0 ? (
-        parseFloat(style.marginTop) + parseFloat(style.marginBottom) + parseFloat(style.height)
-      ) : 0;
-      outer.scrollTop = outer.scrollTop + areaTop + item.getBoundingClientRect().height * unit + offet;
-      boxer.style.transform = `translateY(${-100 / 4 * unit}%)`;
+      const item = this.$refs.item[0];
+      outer.scrollTop = outer.scrollTop + areaTop + item.getBoundingClientRect().height * unit;
+      if (unit <= 4) {
+        boxer.style.transform = `translateY(${-100 / 5 * unit}%)`;
+        (!this.loopIndexs.includes(val) && unit <= 3) && this.$refs.featureItem[unit].play();
+      }
     },
     vueTouch(delta, e) {
       if (this.device !== 'pad') {
         return;
       }
-      const outer = document.getElementById('full');
+      const currTime = new Date().getTime();
+      const during = currTime - this.scrollTime;
       const dom = this.$refs.container;
-      const areaHeight = this.$refs.area.getBoundingClientRect().height;
-      const domHeight = dom.getBoundingClientRect().height;
-      const areaTop = this.$refs.area.getBoundingClientRect().top;
       const boundary = dom.getBoundingClientRect().top;
-      if (boundary < 0 && this.scrollCount === 3 && !this.isScrolling) {
-        if (delta > 0) {
-          this.intoView();
-        } else {
-          this.$emit('reach-bot');
-        }
-      }
       if (boundary === 0) {
+        if (during < 400) {
+          e.preventDefault();
+          return false;
+        }
+
+        this.scrollTime = currTime;
         if (this.scrollCount === 0 && delta > 0) {
           if (this.isScrolling) {
             e.preventDefault();
-          } else {
-            // outer.scrollTop = outer.scrollTop + areaTop;
           }
-        } else if (this.scrollCount === 3 && delta < 0) {
+        } else if (this.scrollCount === 6 && delta < 0) {
           if (this.isScrolling) {
             e.preventDefault();
-          } else {
-            this.$emit('reach-bot');
-            // outer.scrollTop = outer.scrollTop + areaTop + areaHeight - domHeight;
           }
         } else {
           e.preventDefault();
@@ -180,7 +207,7 @@ export default {
               this.isScrolling = false;
               clearTimeout(this.timer);
               this.timer = null;
-            }, 1500);
+            }, 800);
           }
         }
       }
@@ -194,9 +221,8 @@ export default {
   position: relative;
   // margin-top: 100px;
   width: 100%;
-  height: 400vh;
+  height: 500vh;
   background: #121a18;
-  padding: 1px 0px;
   .feature-container {
     position: sticky;
     z-index: 1;
@@ -207,40 +233,52 @@ export default {
     overflow: hidden;
   }
   .sticky-title {
-    margin-top: 150px;
-    position: sticky;
+    width: 100%;
+    position: absolute;
     z-index: 3;
     top: 150px;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
   }
   .feature-boxer {
     position: relative;
     z-index: 2;
-    height: 400vh;
+    height: 500vh;
     width: 100%;
-    transition: transform 1s;
+    transition: transform 800ms;
   }
   .feature-box {
     height: 100vh;
     width: 100%;
     z-index: 1;
     overflow: hidden;
+    transition: opacity 0.5s;
+    opacity: 0;
     .feature-item {
       max-width: 1280px;
       padding: 0 20px;
       width: 100%;
       height: 100%;
       margin: 0px auto;
-      // height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       // justify-content: center;
     }
+    &.is-active {
+      opacity: 1;
+    }
+    &:nth-child(2) {
+      .feature-item {
+        ::v-deep .animation-container {
+          background: url('~@/assets/lottie/map.svg') no-repeat center;
+        }
+      }
+    }
   }
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1024px) and (orientation: portrait) {
   .feature-area {
     .feature-box {
       .feature-item {
@@ -293,8 +331,16 @@ export default {
   }
 }
 
+@media screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape)  {
+  .feature-area .feature-container {
+    overflow: visible;
+  }
+}
 @media screen and (max-width: 1023px) {
   .feature-area {
+    .sticky-title {
+      top: 140px;
+    }
     .feature-box {
       .feature-item {
         padding: 0 22px;
@@ -332,7 +378,7 @@ export default {
       width: 100%;
       height: auto;
       margin-top: 0px;
-      top: 50px;
+      top: 40px;
       position: relative;
       left: 50%;
       transform: translateX(-50%);
@@ -345,6 +391,7 @@ export default {
       height: auto;
     }
     .feature-box {
+      opacity: 1;
       height: auto;
       .feature-item {
         padding: 0 20px;
@@ -379,6 +426,7 @@ export default {
   .feature-area {
     .sticky-title {
       top: 100px;
+      margin-top: 0px !important;
     }
   }
   .feature-box {

@@ -19,29 +19,19 @@
         class="feature-boxer"
       >
         <div
+          v-for="item in [0, 1, 2, 3]"
           ref="item"
+          :key="'feature'+ item"
           class="feature-box"
-          :class="{ 'is-active': scrollCount === 0 }"
+          :class="{ 'is-active': scrollCount === item }"
         >
-          <feature-one class="feature-item" />
-        </div>
-        <div
-          class="feature-box"
-          :class="{ 'is-active': scrollCount === 1 }"
-        >
-          <feature-two class="feature-item" />
-        </div>
-        <div
-          class="feature-box"
-          :class="{ 'is-active': scrollCount === 2 }"
-        >
-          <feature-three class="feature-item" />
-        </div>
-        <div
-          class="feature-box"
-          :class="{ 'is-active': scrollCount === 3 }"
-        >
-          <feature-four class="feature-item" />
+          <feature-one
+            ref="featureItem"
+            class="feature-item"
+            :list-index="item"
+            :loop="loopIndexs.includes(item)"
+            :animation-data="animationDatas[item]"
+          />
         </div>
       </div>
     </div>
@@ -50,30 +40,33 @@
 
 <script>
 import FeatureOne from './components/FeatureOne';
-import FeatureTwo from './components/FeatureTwo';
-import FeatureThree from './components/FeatureThree';
-import FeatureFour from './components/FeatureFour';
 import PublicTitle from './components/PublicTitle';
+import * as animationData0 from '@/assets/lottie/animation1.json';
+import * as animationData1 from '@/assets/lottie/animation2.json';
+import * as animationData2 from '@/assets/lottie/animation3.json';
+import * as animationData3 from '@/assets/lottie/animation4.json';
 
 export default {
   name: 'FeatureArea',
   components: {
     FeatureOne,
-    FeatureTwo,
-    FeatureThree,
-    FeatureFour,
     PublicTitle
   },
   data() {
     return {
       isScrolling: false,
       timer: null,
-      scrollCount: 0
+      scrollCount: 0,
+      loopIndexs: [1, 3],
+      scrollTime: new Date().getTime()
     };
   },
   computed: {
     device() {
       return this.$store.getters.device;
+    },
+    animationDatas() {
+      return [animationData0, animationData1, animationData2, animationData3];
     }
   },
   watch: {
@@ -83,12 +76,13 @@ export default {
   },
   mounted() {
     this.init();
+    // document.addEventListener('wheel', this.handleScroll, { passive: false });
   },
   methods: {
     intoView() {
       setTimeout(() => {
         this.$refs.area.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-      }, 100);
+      }, 60);
     },
     init() {
       if (this.device === 'desktop') {
@@ -104,6 +98,21 @@ export default {
       const value = event.wheelDelta || -event.deltaY || -event.detail;
       // delta < 0 -- DOWN
       const delta = Math.max(-1, Math.min(1, value));
+      const currTime = new Date().getTime();
+      const during = currTime - this.scrollTime;
+      console.log(during, event.deltaY, this.scrollCount, delta, this.isScrolling);
+      if ((during < 400) || (Math.abs(event.deltaY) < 100)) {
+        if (this.scrollCount === 0 && delta > 0) {
+          if (this.isScrolling) {
+            event.preventDefault();
+          }
+        } else {
+          event.preventDefault();
+          return false;
+        }
+      }
+
+      this.scrollTime = currTime;
       if (boundary < 0 && this.scrollCount === 3 && !this.isScrolling) {
         if (delta > 0) {
           this.intoView();
@@ -130,7 +139,7 @@ export default {
               this.isScrolling = false;
               clearTimeout(this.timer);
               this.timer = null;
-            }, 1500);
+            }, 800);
           }
         }
       }
@@ -140,7 +149,7 @@ export default {
       const boxer = this.$refs.boxer;
       const outer = document.getElementById('full');
       const areaTop = this.$refs.area.getBoundingClientRect().top;
-      const item = this.$refs.item;
+      const item = this.$refs.item[0];
       const stickyTitle = this.$refs.stickyTitle;
       const style = getComputedStyle(stickyTitle.$el);
       const offet = unit === 0 ? (
@@ -148,11 +157,18 @@ export default {
       ) : 0;
       outer.scrollTop = outer.scrollTop + areaTop + item.getBoundingClientRect().height * unit + offet;
       boxer.style.transform = `translateY(${-100 / 4 * unit}%)`;
+      !this.loopIndexs.includes(val) && this.$refs.featureItem[val].play();
     },
     vueTouch(delta, e) {
       if (this.device !== 'pad') {
         return;
       }
+      const currTime = new Date().getTime();
+      if (this.scrollTime && currTime - this.scrollTime < 2000) {
+        e.preventDefault();
+        return;
+      }
+      this.scrollTime = currTime;
       const dom = this.$refs.container;
       const boundary = dom.getBoundingClientRect().top;
       if (boundary < 0 && this.scrollCount === 3 && !this.isScrolling) {
@@ -181,7 +197,7 @@ export default {
               this.isScrolling = false;
               clearTimeout(this.timer);
               this.timer = null;
-            }, 1500);
+            }, 800);
           }
         }
       }
@@ -219,7 +235,7 @@ export default {
     z-index: 2;
     height: 400vh;
     width: 100%;
-    transition: transform 1s;
+    transition: transform 800ms;
   }
   .feature-box {
     height: 100vh;
@@ -241,6 +257,13 @@ export default {
     }
     &.is-active {
       opacity: 1;
+    }
+    &:nth-child(2) {
+      .feature-item {
+        .animation-container {
+          background: url('~@/assets/lottie/map.svg') no-repeat center;
+        }
+      }
     }
   }
 }
@@ -340,7 +363,7 @@ export default {
       width: 100%;
       height: auto;
       margin-top: 0px;
-      top: 50px;
+      top: 40px;
       position: relative;
       left: 50%;
       transform: translateX(-50%);
@@ -388,6 +411,7 @@ export default {
   .feature-area {
     .sticky-title {
       top: 100px;
+      margin-top: 0px !important;
     }
   }
   .feature-box {

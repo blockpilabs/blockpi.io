@@ -7,7 +7,7 @@
       KEEP YOUR SERVICE
     </section>
     <section class="public-title__bot">
-      ALWAYS ONLINE.
+      ALWAYS ONLINE
     </section>
   </div>
 </template>
@@ -77,9 +77,9 @@ export default {
     }
   }
 }
-@media screen and (max-height: 800px) and (min-width: 1024px) {
+@media screen and (max-height: 800px) and (min-width: 1025px) {
   .public-title {
-    margin-top: 40px;
+    margin-top: 60px;
     margin-bottom: 0px;
   }
 }

@@ -44,10 +44,10 @@ VueTouch.prototype = {
           this.touchType === 'swipeleft' && this.vueCallBack(e);
         };
       } else {
-        if (disY > 10) {
+        if (disY > 20) {
           this.touchType === 'swipedown' && this.vueCallBack(e);
         };
-        if (disY < -10) {
+        if (disY < -20) {
           this.touchType === 'swipeup' && this.vueCallBack(e);
         };
       };

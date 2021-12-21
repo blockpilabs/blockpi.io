@@ -27,7 +27,7 @@
               </vue-typed-js>
             </div>
             <div class="desciption">
-              A Distributed multi-chain acceleration layer,solving the RPCrequests congestion problem with infinite scalability
+              A Distributed multi-chain acceleration layer, solving the RPC requests congestion problem with infinite scalability
             </div>
           </div>
           <div class="banner-bottom">
@@ -53,12 +53,8 @@
       </div>
       <feature-area
         ref="featureArea"
-        @reach-bot="reachBot"
       />
-      <technological-features
-        ref="technological"
-        @reach-top="reachTop"
-      />
+
       <div class="get-start">
         <div class="next">
           <i class="iconfont icon-arrow" />
@@ -84,15 +80,13 @@
 
 <script>
 import AppFooter from '@/components/Footer';
-import FeatureArea from './components/FeatureArea';
-import TechnologicalFeatures from './components/TechnologicalFeatures';
+import FeatureArea from './components/FeatureArea/index-new.vue';
 import PointCanvas from '@/components/PointCanvas';
 export default {
   name: 'HomeIntroduce',
   components: {
     AppFooter,
     FeatureArea,
-    TechnologicalFeatures,
     PointCanvas
   },
   data() {
@@ -120,16 +114,6 @@ export default {
   methods: {
     goToRpc() {
       window.open('https://chains.blockpi.io/#/');
-    },
-    reachBot() {
-      this.$nextTick(() => {
-        this.$refs.technological.intoView();
-      });
-    },
-    reachTop() {
-      this.$nextTick(() => {
-        this.$refs.featureArea.intoView();
-      });
     }
   }
 };
@@ -144,13 +128,18 @@ export default {
     background: #121a18;
     z-index: 2;
     width: 100%;
+    height: calc(100vh - 100px);
     &-container {
       position: relative;
       z-index: 3;
       max-width: 1280px;
       width: 100%;
+      height: 100%;
       margin: 0 auto;
       padding: 100px 20px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     &-top {
       display: flex;
@@ -185,7 +174,7 @@ export default {
       position: relative;
       z-index: 1;
       width: 100%;
-      margin-top: 180px;
+      margin-top: auto;
       &::before {
         content: '';
         position: absolute;
@@ -284,6 +273,8 @@ export default {
         color: #5d6d69;
       }
       .build-btn {
+        border: 2px solid #00ffd8;
+        box-shadow: 0px 8px 16px 0px rgba($color: #16c79a, $alpha: 0.38);
         margin-top: 50px;
         font-size: 16px;
         height: 52px;
@@ -339,6 +330,13 @@ export default {
     }
   }
 }
+@media screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape)  {
+  .home-page {
+    .get-start {
+      margin-top: 300px;
+    }
+  }
+}
 @media screen and (max-width: 1023px) {
   .home-page {
     .banner {
@@ -385,6 +383,7 @@ export default {
 @media screen and (max-width: 750px) {
   .home-page {
     .banner {
+      height: auto;
       ::v-deep {
         .point-canvas {
           display: none;

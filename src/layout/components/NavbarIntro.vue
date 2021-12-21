@@ -24,6 +24,7 @@
         </a>
       </div>
       <i
+        v-if="showMiniNav"
         class="mini-menu iconfont icon-navi"
         @click="drawer = true"
       />

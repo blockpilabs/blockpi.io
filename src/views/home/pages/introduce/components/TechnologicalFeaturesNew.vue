@@ -1,56 +1,48 @@
 <template>
   <div
-    ref="box"
-    class="technological-features-box"
+    ref="container"
+    class="technological-features"
   >
-    <div
-      ref="container"
-      class="technological-features"
-    >
-      <div class="title">
-        <span>Technological </span>
-        <br v-hide-dom="750">
-        <span class="attention">Features</span>
-      </div>
-      <div class="main">
-        <div class="main-left">
+    <div class="title">
+      <span>Technological </span>
+      <br v-hide-dom="750">
+      <span class="attention">Features</span>
+    </div>
+    <div class="main">
+      <div class="main-left">
+        <div
+          ref="featureList"
+          class="feature-list"
+        >
           <div
-            ref="featureList"
-            class="feature-list"
+            v-for="(item,index) in features"
+            :key="index"
+            ref="featureItem"
+            class="feature-item"
+            :class="{ active: index + 4 === scrollCount }"
           >
-            <div
-              v-for="(item,index) in features"
-              :key="index"
-              ref="featureItem"
-              class="feature-item"
-              :class="{ active: index + 1 === scrollCount }"
-            >
-              <div class="feature-item__icon">
-                <i :class="item.icon" />
-              </div>
-              <div class="feature-item__title attention">
-                {{ item.title }}
-                <span v-hide-dom="750">{{ item.sub }}</span>
-              </div>
-              <div class="feature-item__sub attention">
-                {{ item.sub }}
-              </div>
-              <div class="feature-item__content">
-                {{ item.content }}
-              </div>
+            <div class="feature-item__icon">
+              <i :class="item.icon" />
+            </div>
+            <div class="feature-item__title attention">
+              {{ item.title }}
+              <span v-hide-dom="750">{{ item.sub }}</span>
+            </div>
+            <div class="feature-item__sub attention">
+              {{ item.sub }}
+            </div>
+            <div class="feature-item__content">
+              {{ item.content }}
             </div>
           </div>
-          <div class="feature-mask" />
         </div>
-        <div class="main-right">
-          <div
-            ref="svgContainer"
-            class="animation-container"
-          />
-        </div>
+        <div class="feature-mask" />
       </div>
-      <div class="next">
-        <i class="iconfont icon-arrow" />
+      <div class="main-right">
+        <div
+          ref="svgContainer"
+          class="animation-container"
+        />
       </div>
     </div>
   </div>
@@ -62,14 +54,16 @@ import lottie from 'lottie-web';
 import * as animationData from '@/assets/lottie/animation5.json';
 export default {
   name: 'TechnologicalFeatures',
+  props: {
+    scrollCount: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
       features: Technologics,
-      scrollCount: 0,
-      animObj: {},
-      isScrolling: false,
-      timer: null,
-      scrollTime: new Date().getTime()
+      animObj: {}
     };
   },
   computed: {
@@ -86,18 +80,7 @@ export default {
     this.init();
   },
   methods: {
-    intoView() {
-      setTimeout(() => {
-        this.$refs.box.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-      }, 60);
-    },
     init() {
-      if (this.device === 'desktop') {
-        this.$refs.container.addEventListener('wheel', this.handleScroll);
-        this.$once('hook:beforeDestroy', () => {
-          this.$refs.container.removeEventListener('wheel', this.handleScroll);
-        });
-      }
       this.animObj = lottie.loadAnimation({
         container: this.$refs.svgContainer,
         animationData: animationData.default,
@@ -106,73 +89,24 @@ export default {
         loop: this.device !== 'desktop'
       });
     },
-    handleScroll(event) {
-      const currTime = new Date().getTime();
-      const during = currTime - this.scrollTime;
-      if ((during < 400) || (Math.abs(event.deltaY) < 100)) {
-        event.preventDefault();
-        return false;
-      }
-      this.scrollTime = currTime;
-      const dom = this.$refs.container;
-      const boundary = dom.getBoundingClientRect().top;
-      const value = event.wheelDelta || -event.deltaY || -event.detail;
-      // delta < 0 -- DOWN
-      const delta = Math.max(-1, Math.min(1, value));
-      if (boundary > 0 && this.scrollCount === 0 && !this.isScrolling) {
-        if (delta > 0) {
-          this.$emit('reach-top');
-        } else {
-          this.intoView();
-        }
-      }
-      if (boundary === 0) {
-        if (this.scrollCount === 0 && delta > 0) {
-          event.preventDefault();
-          this.$emit('reach-top');
-        } else if (this.scrollCount === 3 && delta < 0) {
-          if (this.isScrolling) {
-            event.preventDefault();
-          }
-        } else {
-          event.preventDefault();
-          if (!this.isScrolling) {
-            this.scrollCount -= delta;
-            this.isScrolling = true;
-            this.timer = setTimeout(() => {
-              this.isScrolling = false;
-              clearTimeout(this.timer);
-              this.timer = null;
-            }, 800);
-          }
-        }
-      }
-    },
     // control the animation
     handleAnim(val) {
-      if (this.device === 'mobile') {
+      if (this.device !== 'desktop') {
         return;
       }
       const featureList = this.$refs.featureList;
       const featureItem = this.$refs.featureItem[0];
       const unitHeight = featureItem.scrollHeight;
-      const unit = val === 0 ? 0 : (val - 1);
-      const outer = document.getElementById('full');
-      const boxTop = this.$refs.box.getBoundingClientRect().top;
-      const container = this.$refs.container;
-      outer.scrollTop = outer.scrollTop + boxTop + container.getBoundingClientRect().height * unit;
+      const unit = (val - 3) < 0 ? 0 : val - 4;
       featureList.style.transform = `translateY(${-unitHeight * unit}px)`;
-      switch (val) {
+      switch (unit) {
         case 0:
-          this.animObj.stop();
-          break;
-        case 1:
           this.animObj.playSegments([0, 130], true);
           break;
-        case 2:
+        case 1:
           this.animObj.playSegments([131, 270], true);
           break;
-        case 3:
+        case 2:
           this.animObj.playSegments([271, 450], true);
           break;
         default:
@@ -184,12 +118,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.technological-features-box {
-  position: relative;
-  width: 100%;
-  height: 300vh;
-  background: #121a18;
-}
+
 .technological-features {
   padding-top: 100px;
   height: 100vh;
@@ -216,7 +145,7 @@ export default {
     max-width: 1280px;
     padding: 0 20px;
     width: 100%;
-    margin: 70px auto;
+    margin-top: 70px;
     display: flex;
     align-items: center;
 
@@ -270,13 +199,7 @@ export default {
 
 }
 
-@media screen and (max-width: 1024px),
-screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape)  {
-  .technological-features-box {
-    position: relative;
-    width: 100%;
-    height: auto;
-  }
+@media screen and (max-width: 1024px) {
   .technological-features {
     height: auto;
     position: relative;
@@ -285,7 +208,7 @@ screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orien
     }
     .main {
       padding: 0 30px;
-      margin: 160px auto;
+      margin-top: 160px;
       flex-direction: column;
       &-left {
         width: 100%;
@@ -331,6 +254,62 @@ screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orien
     }
   }
 }
+@media screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape)  {
+  .technological-features {
+    height: auto;
+    position: relative;
+    .title {
+      font-size: 54px;
+    }
+    .main {
+      padding: 0 30px;
+      margin-top: 0px;
+      flex-direction: column;
+      &-left {
+        width: 100%;
+        height: 300px;
+        overflow: hidden;
+        .feature-list {
+          width: 100%;
+          display: flex;
+          justify-content: space-around;
+          transition: all 1s;
+          .feature-item {
+            width: 180px;
+            display: flex;
+            flex-direction: column;
+            &__icon {
+              margin-bottom: 10px;
+              .iconfont {
+                font-size: 40px;
+              }
+            }
+            .attention {
+              font-size: 30px;
+              line-height: 40px;
+              color: #16c79a;
+            }
+            &__content {
+              margin-top: 16px;
+              font-size: 24px;
+              line-height: 30px;
+              color: #5d6d69;
+            }
+          }
+        }
+        .feature-mask {
+          display: none;
+        }
+      }
+      &-right {
+        height: auto;
+        width: 100%;
+        margin-left: 0px;
+      }
+    }
+  }
+}
+
 @media screen and (max-width: 1023px) {
   .technological-features {
     .title {
@@ -338,7 +317,7 @@ screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orien
     }
     .main {
       padding: 0 22px;
-      margin: 120px auto;
+      margin-top: 120px;
       &-left {
         height: 230px;
         .feature-list {

@@ -30,27 +30,48 @@
 import PublicTitle from './PublicTitle';
 import { FeaturesInfo } from '@/assets/libs/enum';
 import lottie from 'lottie-web';
-import * as animationData from '@/assets/lottie/animation1.json';
 export default {
   name: 'FeatureOne',
   components: { PublicTitle },
-  data() {
-    return {
-      title: FeaturesInfo[0].title,
-      descrip: FeaturesInfo[0].content
-    };
+  props: {
+    listIndex: {
+      type: Number,
+      default: 0
+    },
+    loop: {
+      type: Boolean,
+      default: false
+    },
+    animationData: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+  computed: {
+    title() {
+      return FeaturesInfo[this.listIndex].title;
+    },
+    descrip() {
+      return FeaturesInfo[this.listIndex].content;
+    }
   },
   methods: {
     init() {
       this.animObj = lottie.loadAnimation({
         container: this.$refs.svgContainer,
-        animationData: animationData.default,
+        animationData: this.animationData.default,
         autoplay: false,
         renderer: 'svg',
-        loop: false
+        loop: this.loop
       });
       this.$refs.svgContainer.style.opacity = 1;
       this.animObj.play();
+    },
+    play() {
+      if (this.animObj) {
+        this.animObj.stop();
+        this.animObj.play();
+      }
     }
   }
 };
@@ -62,7 +83,6 @@ export default {
     width: 100%;
     flex: 1;
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
   }
